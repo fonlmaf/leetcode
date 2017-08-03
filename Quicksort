@@ -1,0 +1,16 @@
+void Q(int vector<int> a, int low, int high){
+        int first =low;
+        int last=high;
+        int key =a[first];
+        while(first<= last){
+            while(a[last]>=key)
+                last--;
+            a[first]=a[last];
+            while(a[first]<=key)
+                first++;
+            a[last]=a[first];
+            a[first]=key;
+            Q(a,low,first-1);
+            Q(a,first+1,high);
+        }
+    }
