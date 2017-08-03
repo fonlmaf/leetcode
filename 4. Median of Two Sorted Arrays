@@ -2,23 +2,34 @@ class Solution {
 public:
     double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
         //vector<int> nums;
-        int i,j,n,m;
+        int i,j,imin,imax;
+        double max_l,min_r;
         if (nums1.size()>nums2.size())
             swap(nums1,nums2);
         i=nums1.size()/2;
-        //j=(nums1.size()+nums2.size()-1)/2-i;
-        while(i>=0){
-            j=(nums1.size()+nums2.size()-1)/2-i;
-            if ((i==0 or j==nums2.size() or nums1[i-1]<nums2[j]) and (j==0 or i==nums1.size() or nums2[j-1]<nums1[i]))
-                if ((nums1.size()+nums2.size())%2==0)
-                    return (max(nums1[i-1],nums2[j-1])+min(nums1[i],nums2[j]))/2;
-                else 
-                    return min(nums1[i],nums2[j]);
-            else if (nums1[i-1]>nums2[j])
-                i=i-1;
-            else if (nums2[j-1]>nums1[i])
-                i=i+1;
+        //j=(nums1.size()+nums2.size())/2-i-1;
+        imin=0;imax=nums1.size();
+        while(imin<=imax){
+            i=(imin+imax)/2;
+            j=(nums1.size()+nums2.size())/2-i;
+            if (i>0 and nums1[i-1]>nums2[j])
+                imax=i-1;
+            else if (i<nums1.size() and nums2[j-1]>nums1[i])
+                imin=i+1;
+            else{
+                if (i==0) max_l=nums2[j-1];
+                else if (j==0) max_l=nums1[i-1];
+                else max_l= max(nums1[i-1],nums2[j-1]);
+                if (i==nums1.size()) min_r=nums2[j];
+                else if (j==nums2.size()) min_r=nums1[i];
+                else min_r=min(nums1[i],nums2[j]);
+                break;
+            }
+            
         }
-    
+        cout<<i<<endl;
+        cout<<j<<endl;
+        if ((nums1.size()+nums2.size())%2==0) return (max_l+min_r)/2.0;
+        else return min_r;
     }
 };
