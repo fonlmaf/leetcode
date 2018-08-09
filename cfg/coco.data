@@ -1,0 +1,29 @@
+classes= 80
+train  = data/coco/trainvalno5k.txt
+valid = data/coco/5k.txt
+labels = data/coco/labels/
+names = data/coco.names
+backup = backup
+#eval=coco
+
+#coco_edge.data
+classes= 80
+train  = data/coco/trainvalno5k.txt
+#valid  = coco_testdev
+valid = data/coco/5k.txt
+labels = data/coco/labels/
+names = data/coco.names
+backup = backup_coco_edge
+eval=coco
+datatype = RGB_EDGE_DATA
+
+#coco_rggb.data
+classes= 80
+train  = data/coco/trainvalno5k.txt
+valid = data/coco/5k.txt
+labels = data/coco/labels/
+names = data/coco.names
+backup = backup_coco_rggb
+eval=coco
+datatype = RGGB_DATA
+
