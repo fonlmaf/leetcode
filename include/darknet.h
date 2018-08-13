@@ -691,6 +691,7 @@ void set_batch_network(network *net, int b);
 void set_temp_network(network *net, float t);
 image load_image(char *filename, int w, int h, int c);
 image load_image_color(char *filename, int w, int h);
+image load_image_valid(char *filename, int w, int h, char *data_type); // user defined--lzy
 image load_image_edge(char *filename, int w, int h); // user defined--lzy
 image load_image_rggb(char *filename, int w, int h); // user defined--lzy
 image make_image(int w, int h, int c);
