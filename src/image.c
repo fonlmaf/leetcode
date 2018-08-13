@@ -1499,6 +1499,18 @@ image load_image_color(char *filename, int w, int h)
 }
 
 // user defined--lzy
+image load_image_valid(char *filename, int w, int h, char *data_type)
+{
+    if (0 == strcmp(data_type,"RGB_EDGE_DATA")){
+        return load_image_edge(filename, w, h);
+	} else if (0 == strcmp(data_type,"RGGB_DATA")){
+	    return load_image_rggb(filename, w, h);
+	} else {
+	    return load_image_color(filename, w, h);
+	}
+}
+
+// user defined--lzy
 image load_image_edge(char *filename, int w, int h)
 {
     image out1 = load_image_stb(filename, 3);
