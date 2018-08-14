@@ -507,7 +507,8 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
     list *options = read_data_cfg(datacfg);
     char *valid_images = option_find_str(options, "valid", "data/coco_val_5k.list");
     char *data_type = option_find_str(options,"datatype","DETECTION_DATA"); // user_defined
-    
+
+
     network *net = load_network(cfgfile, weightfile, 0);
     set_batch_network(net, 1);
     fprintf(stderr, "Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
@@ -524,12 +525,14 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
     int i=0;
 
     float thresh = .001;
+	float p_thresh = .5;
     float iou_thresh = .5;
     float nms = .4;
 
     int total = 0;
     int correct = 0;
     int proposals = 0;
+	int fppi = 0;
     float avg_iou = 0;
    
     
@@ -541,7 +544,7 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
         network_predict(net, sized.data);
         int nboxes = 0;
         detection *dets = get_network_boxes(net, sized.w, sized.h, thresh, .5, 0, 1, &nboxes);
-        if (nms) do_nms_obj(dets, nboxes, 1, nms);
+		if (nms) do_nms_obj(dets, nboxes, 1, nms);
 
         char labelpath[4096];
         find_replace(path, "images", "labels", labelpath);
@@ -556,11 +559,31 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
 		fclose(filetmp);
         // ---------------------
         box_label *truth = read_boxes(labelpath, &num_labels);
-        for(k = 0; k < nboxes; ++k){
-            if(dets[k].objectness > thresh){
+        // user defined--lzy: get fppi
+		for(k = 0; k < nboxes; ++k){
+            if (dets[k].objectness > thresh){
                 ++proposals;
-            }
-        }
+				int fp = 1;
+			    int class = -1;
+				for (j=0; j < l.classes; ++j){
+				    if (dets[k].prob[j] > p_thresh){
+						class = j;
+					} 					
+				}
+				if (class >= 0){
+                    for (j=0; j < num_labels; ++j) {
+					    box t = {truth[j].x, truth[j].y, truth[j].w, truth[j].h};
+					    float iou = box_iou(dets[k].bbox, t);
+						if(iou > iou_thresh) {
+						    --fp;
+							break;
+						}
+					}
+					fppi = fppi + fp;
+				}
+			}
+		}
+		// get recall 
         for (j = 0; j < num_labels; ++j) {
             ++total;
             box t = {truth[j].x, truth[j].y, truth[j].w, truth[j].h};
@@ -577,7 +600,7 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
             }
         }
 
-        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\tFPPI:%.2f\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total, (float)fppi/(i+1));
         free(id);
         free_image(orig);
         free_image(sized);
