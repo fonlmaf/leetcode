@@ -1,5 +1,6 @@
 #include "darknet.h"
 #include "stb_image.h"
+#include "image.h"
 
 
 static int coco_ids[] = {1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,31,32,33,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,67,70,72,73,74,75,76,77,78,79,80,81,82,84,85,86,87,88,89,90};
@@ -501,7 +502,7 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
     fprintf(stderr, "Total Detection Time: %f Seconds\n", what_time_is_it_now() - start);
 }
 
-void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
+void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile, float thresh)
 {
     // user defined--lzy
     list *options = read_data_cfg(datacfg);
@@ -524,8 +525,7 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
     int m = plist->size;
     int i=0;
 
-    float thresh = .001;
-	float p_thresh = .5;
+    // float thresh = .005;
     float iou_thresh = .5;
     float nms = .4;
 
@@ -534,7 +534,10 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
     int proposals = 0;
 	int fppi = 0;
     float avg_iou = 0;
-   
+   	int class_total[l.classes];
+	  float precision_total[l.classes];
+	  memset(class_total, 0, sizeof(int)*l.classes);
+	  memset(precision_total, 0, sizeof(float)*l.classes);
     
     for(i = 0; i < m; ++i){
         char *path = paths[i];
@@ -559,15 +562,21 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
 		fclose(filetmp);
         // ---------------------
         box_label *truth = read_boxes(labelpath, &num_labels);
+        int class_t[l.classes];
+	      int TP_t[l.classes];
+	      memset(class_t, 0, sizeof(int)*l.classes);
+	      memset(TP_t, 0, sizeof(int)*l.classes);
+        float mAP = 1;
         // user defined--lzy: get fppi
 		for(k = 0; k < nboxes; ++k){
             if (dets[k].objectness > thresh){
                 ++proposals;
-				int fp = 1;
+				int fp = 0;
 			    int class = -1;
 				for (j=0; j < l.classes; ++j){
-				    if (dets[k].prob[j] > p_thresh){
+				    if (dets[k].prob[j] > thresh){
 						class = j;
+						fp = 1;
 					} 					
 				}
 				if (class >= 0){
@@ -575,18 +584,19 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
 					    box t = {truth[j].x, truth[j].y, truth[j].w, truth[j].h};
 					    float iou = box_iou(dets[k].bbox, t);
 						if(iou > iou_thresh) {
-						    --fp;
+						    fp = 0;
 							break;
 						}
 					}
-					fppi = fppi + fp;
-				}
+			    }
+				fppi = fppi + fp;
 			}
 		}
-		// get recall 
+		// get recall and mAP 
         for (j = 0; j < num_labels; ++j) {
             ++total;
             box t = {truth[j].x, truth[j].y, truth[j].w, truth[j].h};
+            class_t[truth[j].id] += 1;
             float best_iou = 0;
             for(k = 0; k < l.w*l.h*l.n; ++k){
                 float iou = box_iou(dets[k].bbox, t);
@@ -597,10 +607,24 @@ void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile)
             avg_iou += best_iou;
             if(best_iou > iou_thresh){
                 ++correct;
+                TP_t[truth[j].id] += 1;
             }
         }
+        
+        int obj_cls = 0;
+        for (j = 0; j < l.classes; ++j) {
+		    if (class_t[j] > 0){
+			    class_total[j] += 1;
+				precision_total[j] += (float)TP_t[j]/class_t[j];
+			}
+			if (class_total[j] > 0) {
+                obj_cls+=1;
+                mAP += (float)precision_total[j]/class_total[j];
+            }
+		}
 
         fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\tFPPI:%.2f\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total, (float)fppi/(i+1));
+        // fprintf(stderr, "%5d %5d %5d\tIOU: %.2f%%\tRecall:%.2f%%\tFPPI:%.2f\tmAP:%.2f%%\n", i, correct, total, avg_iou*100/total, 100.*correct/total, (float)fppi/(i+1), (float)100.*mAP/obj_cls);
         free(id);
         free_image(orig);
         free_image(sized);
@@ -891,7 +915,7 @@ void run_detector(int argc, char **argv)
     else if(0==strcmp(argv[2], "train")) train_detector(datacfg, cfg, weights, gpus, ngpus, clear);
     else if(0==strcmp(argv[2], "valid")) validate_detector(datacfg, cfg, weights, outfile);
     else if(0==strcmp(argv[2], "valid2")) validate_detector_flip(datacfg, cfg, weights, outfile);
-    else if(0==strcmp(argv[2], "recall")) validate_detector_recall(datacfg, cfg, weights); // user defined--lzy
+    else if(0==strcmp(argv[2], "recall")) validate_detector_recall(datacfg, cfg, weights, thresh); // user defined--lzy
     else if(0==strcmp(argv[2], "demo")) {
         list *options = read_data_cfg(datacfg);
         int classes = option_find_int(options, "classes", 20);
@@ -902,3 +926,4 @@ void run_detector(int argc, char **argv)
     //else if(0==strcmp(argv[2], "extract")) extract_detector(datacfg, cfg, weights, cam_index, filename, class, thresh, frame_skip);
     //else if(0==strcmp(argv[2], "censor")) censor_detector(datacfg, cfg, weights, cam_index, filename, class, thresh, frame_skip);
 }
+
