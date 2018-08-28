@@ -1,0 +1,102 @@
+官方：76.8
+RGB 3通道：
+500： IOU：37.75%  Recall：30.58%  FPPI:0.00 mAP:40.53%
+1000： IOU：39.44%  Recall：32.63% FPPI:0.00 mAP:43.20%
+50000： IOU：46.10%  Recall：48.63% FPPI:0.08 mAP:63.20%
+100000： IOU：48.81%  Recall：53.13% FPPI:0.13 mAP:66.71%
+125000： IOU：49.21%  Recall：53.95% FPPI:0.20 mAP:67.73%
+150000： IOU：49.94%  Recall：55.21%  FPPI:0.16 mAP:69.05%
+175000： IOU：50.11%  Recall：55.05% FPPI:0.21 mAP:69.31%
+200000： IOU：50.69%  Recall：56.00% FPPI:0.23 mAP:70.53%
+225000： IOU：51.16%  Recall：57.04%  FPPI:0.21 mAP:71.22% thresh =0.001
+
+225000: ROC
+Thresh=0.005: Recall：56.34%  FPPI: 58.16
+Thresh=0.05: Recall：51.62%  FPPI: 11.39
+Thresh=0.1: Recall：48.17%  FPPI: 5.41
+Thresh=0.2: Recall：42.36%  FPPI: 1.99
+Thresh=0.3: Recall：37.52%  FPPI: 0.90
+Thresh=0.4: Recall：32.46%  FPPI: 0.44
+Thresh=0.5: Recall：27.31%  FPPI: 0.21
+Thresh=0.7: Recall：15.99%  FPPI: 0.04
+
+
+
+RGB-EDGE 4通道：
+500：IOU：35.53%  Recall：23.88%  FPPI:0.00  mAP:32.92%
+1000：IOU：37.44%  Recall:29.76%   FPPI:0.00  mAP:41.84%
+25000：IOU：46.36%  Recall：49.27%  FPPI:0.10  mAP:62.67%
+50000：IOU：48.12%   Recall：52.41%  FPPI:0.10  mAP:66.42%
+75000：IOU：48.94%  Recall：53.59%  FPPI:0.16 mAP:67.93%
+100000：IOU：49.80%  Recall：55.03%  FPPI:0.13 mAP:68.92%
+125000：IOU：50.50%  Recall：55.87%  FPPI:0.15 mAP:69.60%
+150000：IOU：50.55%  Recall：56.10%  FPPI:0.15 mAP:70.26%
+175000：IOU：50.37%  Recall：56.15%  FPPI:0.18 mAP:70.75%
+200000：IOU：51.07%  Recall：56.84%  FPPI:0.19 mAP:70.78%
+225000：IOU：51.42%  Recall：57.29%  FPPI:0.23 mAP:71.69%
+
+225000: ROC
+Thresh=0.05: Recall：56.59%  FPPI: 57.87	
+Thresh=0.05: Recall：52.29%  FPPI: 12.57	
+Thresh=0.1: Recall：49.22%  FPPI: 6.11	
+Thresh=0.2: Recall：43.66%  FPPI: 2.31	
+Thresh=0.3: Recall：38.79%  FPPI: 1.06
+Thresh=0.4: Recall：34.05%  FPPI: 0.50
+Thresh=0.5: Recall：28.95%  FPPI: 0.23
+Thresh=0.7: Recall：17.31%  FPPI: 0.04
+
+
+
+RGB-RGGB 4通道：
+500：IOU：35.26%  Recall：23.67%  FPPI:0.00  mAP: 33.00%
+1000：IOU：38.37%  Recall：32.17%  FPPI:0.00  mAP: 43.12%
+25000：IOU：46.22%  Recall：49.21%  FPPI:0.07  mAP: 63.56%
+50000：IOU：48.22%  Recall：52.86%  FPPI:0.12  mAP: 66.66%
+75000：IOU：48.43%  Recall：52.95%  FPPI:0.17  mAP: 67.23%
+100000：IOU：49.53%   Recall：54.10%  FPPI:0.18  mAP:68.17%
+125000：IOU：50.30%   Recall：55.81%  FPPI:0.21  mAP:69.89%
+150000：IOU：50.48%   Recall：56.11%  FPPI:0.22  mAP: 69.97%
+175000：IOU：51.21%   Recall：57.28%  FPPI:0.19  mAP:70.88%
+200000：IOU：50.81%  Recall：56.26%  FPPI:0.25 mAP:70.15%
+225000：IOU：51.35%  Recall：57.29%  FPPI:0.19 mAP:71.32%
+
+225000: ROC
+Thresh=0.005: Recall：56.56%  FPPI: 56.61	
+Thresh=0.05: Recall：52.02%  FPPI: 11.54	
+Thresh=0.1: Recall：48.52%  FPPI: 5.50
+Thresh=0.2: Recall：42.88%  FPPI: 1.97
+Thresh=0.3: Recall：37.65%  FPPI: 0.89
+Thresh=0.4: Recall：32.73%  FPPI: 0.42
+Thresh=0.5: Recall：27.57%  FPPI: 0.19
+Thresh=0.7: Recall：15.89%  FPPI: 0.03
+
+
+
+
+
+
+
+标准模型：
+Thresh=0.005: IOU：53.84%  Recall：59.87%  FPPI:29.16
+Thresh=0.05: IOU：51.14%  Recall：56.43%  FPPI:8.64
+Thresh=0.1: IOU：48.95%  Recall：54.20%  FPPI: 4.80
+Thresh=0.2: IOU：44.79%  Recall：49.90%  FPPI: 2.14
+Thresh=0.3: IOU：40.72%  Recall：45.91%  FPPI: 1.11
+Thresh=0.4: IOU：36.53%  Recall：41.36%  FPPI: 0.60
+Thresh=0.5: IOU：32.17%  Recall：36.30%  FPPI: 0.32
+Thresh=0.5: IOU：20.84%  Recall：22.62%  FPPI: 0.06
+Thresh=0.5: IOU：12.33%  Recall：12.89%  FPPI: 0.02
+
+
+
+
+
+
+
+
+
+IOU：每个true bounding box的 对应IOU最大的框，所有label得到的IOU均值
+Recall: best_iou中大于阈值的个数与label总个数之比
+
+
+
